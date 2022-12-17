@@ -1,23 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  Box,
+  CssBaseline,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Container,
+} from "@material-ui/core";
+import Pagination from "@material-ui/lab/Pagination";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const loadPosts = async () => {
+    const res = await axios.get(`https://jsonplaceholder.typicode.com/posts?_page=${page}`);
+    setPosts(res.data);
+  };
+  useEffect(() => {
+    loadPosts();
+  }, [page]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <CssBaseline />
+      <Container component={Box} py={3}>
+        <Grid container spacing={2}>
+          {posts.map((post) => (
+            <Grid item sm={3}>
+              <Card key={"post.id"} style={{ height: 200 }}>
+                <CardContent>
+                  <Typography variant="h6">
+                    {post.id}. {post.title}.{post.body}
+                  </Typography>
+                  <Typography variant="body1">{post.content}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        <Box py={3} display="flex" justifyContent="center">
+          <Pagination
+            count={10}
+            color="secondary"
+            variant="outlined"
+            onChange={(e, value) => setPage(value)}
+          />
+        </Box>
+      </Container>
     </div>
   );
 }
